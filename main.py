@@ -2,6 +2,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import json, os
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 app = FastAPI()
 
@@ -11,8 +13,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-@app.get("/")
-def home():
+@app.get("/api")
+def api_status():
     return {"message": "Smart College Complaint System LIVE", "docs": "/docs"}
 USERS_FILE = "users.json"
 COMPLAINTS_FILE = "complaints.json"
@@ -94,3 +96,5 @@ def update_status(idx: int, data: dict):
         print(f"SAVED: {data}")
         return {"message": "updated"}
     return {"error": "Not found"}
+    # Frontend LIVE cheyadaniki
+app.mount("/", StaticFiles(directory=".", html=True), name="frontend")
