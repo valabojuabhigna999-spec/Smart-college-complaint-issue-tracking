@@ -52,11 +52,11 @@ td{padding:12px; border-bottom:1px solid #ddd; font-size:14px;}
 </div>
 
 <script>
-const API = "http://127.0.0.1:8000";
+const API = "";
 
 async function loadHistory(){
   try{
-    let res = await fetch(API+"/complaints");
+    let res = await fetch("/complaints");
     let data = await res.json();
     let tbody = document.getElementById('historyBody');
     tbody.innerHTML = "";
