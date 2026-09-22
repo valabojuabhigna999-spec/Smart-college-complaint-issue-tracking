@@ -11,7 +11,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+@app.get("/")
+def home():
+    return {"message": "Smart College Complaint System LIVE", "docs": "/docs"}
 USERS_FILE = "users.json"
 COMPLAINTS_FILE = "complaints.json"
 
