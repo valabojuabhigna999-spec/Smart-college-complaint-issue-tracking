@@ -122,7 +122,7 @@ async function submitComplaint(){
   let desc = tarea?.value || "";
   if(!sname ||!roll){ alert("Name and Pin required!"); return; }
   let data = { student_name: sname, pin_no: roll, room_no: roomNo, branch: branch, complaint_type: ctype, description: desc };
-  await fetch('http://127.0.0.1:8000/complaints', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+  await fetch('/complaints', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
   alert("Submitted! ✅"); location.reload();
 }
 async function loadComplaints(){
