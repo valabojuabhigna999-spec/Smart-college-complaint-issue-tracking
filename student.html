@@ -99,7 +99,7 @@ input, textarea, select{width:100%; padding:10px; margin:8px 0; border:1px solid
 </div>
 
 <script>
-const API = "http://127.0.0.1:8000";
+const API = "";
 
 function checkOther(val){
   let otherBox = document.getElementById('otherTitle');
@@ -126,7 +126,7 @@ async function submitComplaint(){
   alert("Submitted! ✅"); location.reload();
 }
 async function loadComplaints(){
-  let r = await fetch(API+"/complaints");
+  let r = await fetch("/complaints");
   let complaints = await r.json();
   let div = document.getElementById('list');
   div.innerHTML="";
