@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
+<style>
+body{font-family:Arial, sans-serif; background:#f5f6fa; margin:0;}
+.top-bar{background:#a8c0ff; padding:15px; display:flex; gap:10px;}
+.top-bar button{padding:8px 15px; border:none; border-radius:6px; cursor:pointer; font-weight:bold;}
+.btn-black{background:#2f3640; color:white;}
+.btn-red{background:#e84118; color:white;}
+table{width:100%; border-collapse:collapse; margin-top:0; background:white;}
+th{background:#1e272e; color:white; padding:12px; text-align:left;}
+td{padding:12px; border-bottom:1px solid #ddd;}
+.status-btn{border:none; padding:6px 12px; border-radius:15px; cursor:pointer; font-weight:bold; margin-left:5px;}
+.pending{background:#f8a5a5;}
+.inprog{background:#74b9ff;}
+.resolved{background:#55efc4;}
+input{padding:6px 10px; border-radius:6px; border:1px solid #ccc;}
+</style>
+</head>
+<body>
+<div class="top-bar">
+<button class="btn-black" onclick="location.href='index.html'">← Home</button>
+<button class="btn-red" onclick="logout()">Logout Admin</button>
+</div>
+<div style="display:flex; gap:10px; margin:15px; font-family: sans-serif;">
+
+  <div style="background:#e3f2fd; padding:10px 12px; border-radius:8px; flex:1; text-align:center; border-left:4px solid #2196f3;">
+    <h2 id="totalCount" style="margin:0; font-size:20px;">0</h2>
+    <p style="margin:3px 0 0 0; font-size:13px;">Total Complaints</p>
+  </div>
+
+  <div style="background:#fff3e0; padding:10px 12px; border-radius:8px; flex:1; text-align:center; border-left:4px solid #ff9800;">
+    <h2 id="pendingCount" style="margin:0; font-size:20px;">0</h2>
+    <p style="margin:3px 0 0 0; font-size:13px;">Pending</p>
+  </div>
+
+  <div style="background:#e8f5e9; padding:10px 12px; border-radius:8px; flex:1; text-align:center; border-left:4px solid #4caf50;">
+    <h2 id="solvedCount" style="margin:0; font-size:20px;">0</h2>
+    <p style="margin:3px 0 0 0; font-size:13px;">Solved</p>
+  </div>
+
+</div>
+</div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Pin No</th>
+<th>Room No</th>
+<th>Complaint Type</th>
+<th>Description</th>
+<th>Votes</th>
+<th>Status</th>
+<th>Handled By</th>
+<th>Status - 3 Buttons (Admin Only)</th>
+</tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
+
+<script>
+const API = "http://127.0.0.1:8000";
+
+async function load(){
+ let r = await fetch(API+"/complaints");
+ let data = await r.json();
+ let tbody = document.getElementById('tableBody');
+ tbody.innerHTML="";
+ data.forEach((c,i)=>{
+  tbody.innerHTML+=`<tr>
+<td>${c.student_name || c.sname || 'vamshi krishna'}</td>
+<td>${c.pin_no || c.roll_no || c.roll || '-'}</td>
+<td>${c.room_no || '-'}</td>
+<td>${c.complaint_type || c.type || 'water'}</td>
+<td>${c.description || c.complaint || c.title || '-'}</td>
+<td>${c.votes || 1}</td>
+<td>${c.status || 'Pending'}</td>
+<td>${c.handled_by || 'not yet'}</td>
+<td>
+<input id="rem-${i}" placeholder="Admin remarks..." value="${c.remarks || ''}">
+     <button class="status-btn pending" onclick="updateStatus(${i},'Pending')">Pending</button>
+     <button class="status-btn inprog" onclick="updateStatus(${i},'In Progress')">In Progress</button>
+     <button class="status-btn resolved" onclick="updateStatus(${i},'Resolved')">Resolved</button>
+   </td>
+  </tr>`;
+ });
+     document.getElementById('totalCount').innerText = data.length;
+  document.getElementById('pendingCount').innerText = data.filter(c => (c.status||"").toLowerCase().includes("pending")).length;
+  document.getElementById('solvedCount').innerText = data.filter(c => !(c.status||"").toLowerCase().includes("pending")).length;
+}
+
+async function updateStatus(idx,st){
+ let remarks = document.getElementById('rem-'+idx).value;
+ let name = localStorage.getItem("adminName")||"Admin";
+ let res = await fetch(API+"/complaints/"+idx,{
+   method:"PUT",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({status:st, admin_name:name, handled_by:name, remarks:remarks})
+ });
+ if(res.ok) load();
+}
+function logout(){ localStorage.clear(); location.href='admin_login.html'; }
+load();
+</script>
+</body>
+</html>

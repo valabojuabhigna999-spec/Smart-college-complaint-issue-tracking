@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head><title>Student Login</title></head>
+<body>
+<div style="text-align:center; margin-top:100px;">
+<h2>Student Login</h2>
+<input type="text" id="name" placeholder="Name" style="padding:8px;"><br><br>
+<input type="password" id="password" placeholder="Password" style="padding:8px;"><br><br>
+<button onclick="login()" style="padding:8px 20px;">Login</button>
+</div>
+
+<script>
+async function login(){
+ let name = document.getElementById('name').value;
+ let p = document.getElementById('password').value;
+ if(!name || !p){ alert("Name & Password enter chey bro"); return; }
+ 
+ try {
+   let r = await fetch('http://127.0.0.1:8000/login',{
+     method:'POST',
+     headers:{'Content-Type':'application/json'},
+     body: JSON.stringify({name:name, password:p, email:name})
+   });
+   let d = await r.json();
+   if(r.ok){
+     localStorage.setItem('studentName', name);
+     localStorage.setItem('email', name);
+     location.href='index.html';
+   } else {
+     alert(d.detail || "Login failed");
+   }
+ } catch(err){
+   alert("Backend run avvatledu! Terminal lo uvicorn main:app --reload run chesava?");
+   console.log(err);
+ }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student Portal - Complaints</title>
+<style>
+body{font-family:Arial; background:#f1f2f6; margin:0; padding:0;}
+.navbar{background:#0984e3; color:white; padding:15px 20px; display:flex; justify-content:space-between; align-items:center;}
+.navbar button{padding:7px 14px; border:none; border-radius:5px; cursor:pointer; font-weight:bold;}
+.container{max-width:900px; margin:20px auto; padding:15px;}
+.card{background:white; padding:20px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1); margin-bottom:20px;}
+input, textarea, select{width:100%; padding:10px; margin:8px 0; border:1px solid #ccc; border-radius:6px; box-sizing:border-box;}
+.btn-submit{background:#0984e3; color:white; border:none; padding:12px; border-radius:6px; width:100%; font-size:16px; font-weight:bold; cursor:pointer;}
+.complaint-box{border-left:5px solid #0984e3; padding:15px; margin-bottom:12px; background:white; border-radius:6px;}
+.badge{padding:3px 10px; border-radius:12px; font-size:12px; font-weight:bold;}
+.pending{background:#ffeaa7;} .inprogress{background:#81ecec;} .resolved{background:#55efc4;}
+.vote-btn{background:#2d3436; color:white; border:none; padding:5px 12px; border-radius:5px; cursor:pointer; margin-top:8px;}
+</style>
+</head>
+<body>
+
+<div class="navbar" style="background:#0ea5e9; padding:12px 15px; display:flex; justify-content:space-between; align-items:center; position:relative;">
+  <button id="menuBtn" style="background:white; border:none; padding:8px 14px; border-radius:6px; font-weight:bold; cursor:pointer;">☰ Menu</button>
+  <h3 style="margin:0; color:white;">🎓 Student Portal</h3>
+  <div style="width:70px;"></div>
+
+  <div id="menuDropdown" style="display:none; position:absolute; top:50px; left:15px; background:white; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.3); width:160px; z-index:999;">
+    <a href="index.html" style="display:block; padding:12px; text-decoration:none; color:black; border-bottom:1px solid #eee;">🏠 Home</a>
+    <a href="my_history.html" style="display:block; padding:12px; text-decoration:none; color:black;">📜 History</a>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="card">
+    <h3>Raise a New Complaint</h3>
+    <input id="sname" placeholder="Your Name">
+    <input id="Pin no" placeholder="Pin No ">
+    <input id="Room no" placeholder="Room No">
+    <select id="branch">
+      <option value="">Select Branch</option>
+      <option>CSE</option><option>ECE</option><option>EEE</option>
+      <option>MECH</option><option>CIVIL</option><option>AI</option><option>Other</option>
+    </select>
+
+    <!-- DROPDOWN FOR TITLE -->
+    <select id="title" onchange="checkOther(this.value)">
+      <option value="">-- Select Complaint Title --</option>
+      <option value="ClassRoom Maintenance">ClassRoom Maintenance</option>
+      <option value="Labs">Labs</option>
+      <option value="WiFi">WiFi</option>
+      <option value="Water">Water</option>
+      <option value="Washroom issue">Washroom issue</option>
+      <option value="Classroom issue">Classroom issue</option>
+      <option value="Library issue">Library issue</option>
+      <option value="Canteen issue">Canteen issue</option>
+      <option value="Student related issue">Student related issue</option>
+      <option value="Other">Other (Type manually)</option>
+    </select>
+    <input id="otherTitle" placeholder="If Other, type your title here..." style="display:none;">
+
+    <textarea id="desc" placeholder="Describe your complaint..."></textarea>
+    <button class="btn-submit" onclick="submitComplaint()">Submit Complaint</button>
+  </div>
+
+  
+    <div class="card">
+      <div style="display:flex; gap:10px; margin:15px 0;">
+  <div style="background:#e3f2fd; padding:12px; border-radius:8px; flex:1; text-align:center; border-left:4px solid #2196F3;">
+    <h3 id="sTotal" style="margin:0;">0</h3><small>Total</small>
+  </div>
+  <div style="background:#fff3e0; padding:12px; border-radius:8px; flex:1; text-align:center; border-left:4px solid #FF9800;">
+    <h3 id="sPending" style="margin:0;">0</h3><small>Pending</small>
+  </div>
+  <div style="background:#e8f5e9; padding:12px; border-radius:8px; flex:1; text-align:center; border-left:4px solid #4CAF50;">
+    <h3 id="sSolved" style="margin:0;">0</h3><small>Solved</small>
+  </div>
+</div>
+  <h3>All Complaints</h3>
+  <table border="1" style="width:100%; border-collapse:collapse; text-align:left;">
+    <thead>
+      <tr style="background:#1e3a8a; color:white;">
+        <th style="padding:8px;">Name</th>
+        <th style="padding:8px;">Pin no</th>
+        <th style="padding:8px;">Room</th>
+        <th style="padding:8px;">Type</th>
+        <th style="padding:8px;">Status</th>
+        <th style="padding:8px;">Handled By</th>
+        <th style="padding:8px;">Admin Remarks</th>
+      </tr>
+    </thead>
+    <tbody id="list">
+      <tr><td colspan="6">Loading...</td></tr>
+    </tbody>
+  </table>
+</div>
+  </div>
+
+</div>
+
+<script>
+const API = "http://127.0.0.1:8000";
+
+function checkOther(val){
+  let otherBox = document.getElementById('otherTitle');
+  if(val === "Other"){
+    otherBox.style.display = "block";
+  } else {
+    otherBox.style.display = "none";
+  }
+}
+
+async function submitComplaint(){
+  let inputs = document.querySelectorAll('input');
+  let selects = document.querySelectorAll('select');
+  let tarea = document.querySelector('textarea');
+  let sname = inputs[0]?.value.trim() || "";
+  let roll = inputs[1]?.value.trim() || "";
+  let roomNo = inputs[2]?.value.trim() || "";
+  let branch = inputs[3]?.value.trim() || "CSE";
+  let ctype = selects[0]?.value || "";
+  let desc = tarea?.value || "";
+  if(!sname ||!roll){ alert("Name and Pin required!"); return; }
+  let data = { student_name: sname, pin_no: roll, room_no: roomNo, branch: branch, complaint_type: ctype, description: desc };
+  await fetch('http://127.0.0.1:8000/complaints', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+  alert("Submitted! ✅"); location.reload();
+}
+async function loadComplaints(){
+  let r = await fetch(API+"/complaints");
+  let complaints = await r.json();
+  let div = document.getElementById('list');
+  div.innerHTML="";
+
+  complaints.forEach((c,i)=>{
+    let colorClass = "pending";
+    if((c.status||"").includes("Progress")) colorClass="inprogress";
+    if((c.status||"").includes("Resolved")) colorClass="resolved";
+    div.innerHTML+=`
+      <tr style="border-bottom:1px solid #ddd;">
+        <td style="padding:10px;">${c.student_name || c.name || '-'}</td>
+        <td style="padding:10px;">${c.pin_no || c.pin || c.roll_no || '-'}</td>
+        <td style="padding:10px;">${c.room_no || c.roll_no || '-'}</td>
+        <td style="padding:10px;">${c.title || c.complaint || c.complaint_type || '-'}</td>
+        <td style="padding:10px;"><span class="badge ${colorClass}">${c.status}</span></td>
+        <td style="padding:10px;">${c.handled_by || '-'}</td>
+        <td style="padding:10px; color:green; font-weight:bold;">${c.remarks || c.admin_remarks || 'No remarks'}</td>
+      </tr>`;
+  });
+
+  // COUNTS FIX - IDI LEKAPOTHE 0 0 0 ANE UNTUNDI
+  if(document.getElementById('sTotal')){
+    document.getElementById('sTotal').innerText = complaints.length;
+    document.getElementById('sPending').innerText = complaints.filter(c => (c.status||"").toLowerCase().includes("pending")).length;
+    document.getElementById('sSolved').innerText = complaints.filter(c => !(c.status||"").toLowerCase().includes("pending")).length;
+  }
+}
+
+
+loadComplaints();
+// MENU BUTTON CLICK FIX
+function toggleMenu(){
+  let d = document.getElementById('menuDropdown');
+  d.style.display = d.style.display === 'block' ? 'none' : 'block';
+}
+document.getElementById('menuBtn').onclick = toggleMenu;
+</script>
+
+</body>
+</html>

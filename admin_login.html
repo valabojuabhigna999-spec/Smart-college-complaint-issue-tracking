@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Login</title>
+<style>
+body{font-family:Arial;background:#f4f6f9;display:flex;justify-content:center;align-items:center;height:100vh;margin:0}
+.box{background:white;padding:30px;border-radius:10px;width:320px;box-shadow:0 0 10px rgba(0,0,0,0.1)}
+h2{text-align:center}
+input{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:5px;box-sizing:border-box}
+button{width:100%;padding:12px;background:#1a2a4a;color:white;border:none;border-radius:5px;cursor:pointer;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="box">
+<h2>🔐 Admin Login</h2>
+<input id="adminName" placeholder="Admin Name">
+<input id="adminDept" placeholder="Admin Dept">
+<input id="adminPass" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<p style="text-align:center;margin-top:10px"><a href="index.html">← Back to Complaints</a></p>
+</div>
+<script>
+function login(){
+  const name = document.getElementById("adminName").value.trim();
+  const dept = document.getElementById("adminDept").value.trim();
+  const pass = document.getElementById("adminPass").value.trim();
+  
+  if(!name || !dept || !pass){
+    alert("Please fill all fields");
+    return;
+  }
+  // Password check - 1234
+  if(pass !== "1234" && pass !== "admin" && pass !== "ravan"){
+    alert("Wrong password! Use 1234");
+    return;
+  }
+
+  // IMPORTANT - Ikkada name save avuthundi
+  localStorage.setItem("adminName", name);
+  localStorage.setItem("adminDept", dept);
+  localStorage.setItem("isAdmin", "true");
+
+  window.location.href = "admin_dashboard.html";
+}
+</script>
+</body>
+</html>

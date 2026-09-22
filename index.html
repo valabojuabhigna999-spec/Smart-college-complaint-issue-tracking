@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>College Complaint Portal</title>
+<style>
+body{margin:0; font-family:Arial; background:#f1f2f6; display:flex; justify-content:center; align-items:center; height:100vh;}
+.container{display:flex; gap:30px;}
+.card{background:white; width:300px; padding:30px; border-radius:15px; box-shadow:0 10px 20px rgba(0,0,0,0.1); text-align:center; cursor:pointer; transition:0.3s;}
+.card:hover{transform:translateY(-10px); box-shadow:0 20px 30px rgba(0,0,0,0.2);}
+.card h2{margin-top:10px;}
+.icon{font-size:60px;}
+.student{border-top:5px solid #0984e3;}
+.hod{border-top:5px solid #e17055;}
+.btn{margin-top:20px; padding:10px 20px; border:none; border-radius:20px; color:white; font-weight:bold; cursor:pointer; width:100%;}
+.btn-blue{background:#0984e3;} .btn-orange{background:#e17055;}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="card student" onclick="location.href='student.html'">
+    <div class="icon">🎓</div>
+    <h2>Student Portal</h2>
+    <p>Raise complaints & Vote</p>
+    <p style="color:green; font-size:13px;">No password required</p>
+    <button class="btn btn-blue">Enter as Student</button>
+  </div>
+
+  <div class="card hod" onclick="location.href='admin_login.html'">
+    <div class="icon">👨‍🏫</div>
+    <h2>HOD Portal</h2>
+    <p>Manage all complaints</p>
+    <p style="color:red; font-size:13px;">Password required</p>
+    <button class="btn btn-orange">Enter as HOD</button>
+  </div>
+</div>
+</body>
+</html>

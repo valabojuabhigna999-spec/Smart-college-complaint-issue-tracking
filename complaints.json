@@ -1,0 +1,17 @@
+[
+  {
+    "student_name": "Abhigna",
+    "pin_no": "24259-cs-034",
+    "room_no": "111",
+    "branch": "CSE",
+    "complaint_type": "CSE",
+    "description": "not have proper equpiments",
+    "status": "In Progress",
+    "handled_by": "vamshi krishna",
+    "admin_remarks": "will be checked in 2 hours",
+    "admin_name": "vamshi krishna",
+    "remarks": "will be checked in 2 hours",
+    "adminRemarks": "will be checked in 2 hours",
+    "admin_remark": "will be checked in 2 hours"
+  }
+]

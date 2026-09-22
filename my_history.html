@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Complaints History</title>
+<style>
+body{margin:0; font-family:Arial, sans-serif; background:#eef2ff;}
+.header{background:#2563eb; color:white; padding:12px 20px; display:flex; align-items:center; justify-content:space-between;}
+.header h2{margin:0 auto; font-size:18px;}
+.menu-btn{background:white; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-weight:bold;}
+.container{background:white; margin:20px; border-radius:10px; padding:15px; box-shadow:0 2px 8px rgba(0,0,0,0.1); overflow-x:auto;}
+table{width:100%; border-collapse:collapse; min-width:800px;}
+th{background:#2196f3; color:white; padding:12px; text-align:left; font-size:14px;}
+td{padding:12px; border-bottom:1px solid #ddd; font-size:14px;}
+.badge{color:white; padding:4px 10px; border-radius:12px; font-size:12px;}
+.btns{margin:20px; display:flex; gap:10px;}
+.btn-new{background:#0e7490; color:white; border:none; padding:10px 18px; border-radius:6px; cursor:pointer; font-weight:bold;}
+.btn-logout{background:#be123c; color:white; border:none; padding:10px 18px; border-radius:6px; cursor:pointer; font-weight:bold;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <button class="menu-btn" onclick="location.href='index.html'">☰ Menu</button>
+  <h2>Complaints History</h2>
+  <div style="width:70px;"></div>
+</div>
+
+<div class="container">
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>PIN No</th>
+      <th>Complaint Type</th>
+      <th>Description</th>
+      <th>Status</th>
+      <th>Handled By</th>
+      <th>Admin Remarks</th>
+    </tr>
+  </thead>
+  <tbody id="historyBody">
+    <tr><td colspan="7">Loading...</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="btns">
+  <button class="btn-new" onclick="location.href='student_dashboard.html'">+ New Complaint</button>
+  <button class="btn-logout" onclick="localStorage.clear(); location.href='login.html'">Logout</button>
+</div>
+
+<script>
+const API = "http://127.0.0.1:8000";
+
+async function loadHistory(){
+  try{
+    let res = await fetch(API+"/complaints");
+    let data = await res.json();
+    let tbody = document.getElementById('historyBody');
+    tbody.innerHTML = "";
+
+    if(data.length === 0){
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No complaints found</td></tr>`;
+      return;
+    }
+
+    data.forEach(c=>{
+      let status = c.status || 'Pending';
+      let color = status.toLowerCase()=='pending' ? '#ef4444' : status.toLowerCase()=='resolved' ? '#22c55e' : '#f97316';
+      
+      tbody.innerHTML += `
+        <tr>
+          <td style="font-weight:bold;">${c.student_name || c.name || '-'}</td>
+          <td style="color:#2563eb; font-weight:bold;">${c.pin_no || c.pin || '24250-CS-036'}</td>
+          <td>${c.complaint_type || c.title || '-'}</td>
+          <td>${c.description || c.complaint || '-'}</td>
+          <td><span class="badge" style="background:${color}">${status}</span></td>
+          <td>${c.handled_by || '-'}</td>
+          <td>${c.admin_remarks || c.remarks || 'No remarks'}</td>
+        </tr>`;
+    });
+  }catch(e){
+    console.error(e);
+    document.getElementById('historyBody').innerHTML = `<tr><td colspan="7">Error loading data. Backend running leda check chey!</td></tr>`;
+  }
+}
+loadHistory();
+</script>
+</body>
+</html>
